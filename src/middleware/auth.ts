@@ -37,14 +37,14 @@ export function authenticate(
     };
 
     next();
-  } catch (error) {
+  } catch {
     sendError(res, 'Invalid or expired token', HttpStatusCode.UNAUTHORIZED);
   }
 }
 
 export function optionalAuth(
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): void {
   try {

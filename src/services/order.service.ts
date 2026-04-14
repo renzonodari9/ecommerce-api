@@ -1,8 +1,6 @@
-import { Prisma } from '@prisma/client';
 import prisma from '../utils/db.js';
 import { AppError } from '../middleware/error.js';
 import { HttpStatusCode, ErrorMessages } from '../config/constants.js';
-import { PaginationParams } from '../types/api.js';
 
 interface CreateOrderInput {
   shippingAddress: {
@@ -56,16 +54,16 @@ export class OrderService {
         data: {
           orderNumber,
           userId,
-          subtotal: new Prisma.Decimal(subtotal),
-          tax: new Prisma.Decimal(tax),
-          shippingCost: new Prisma.Decimal(shippingCost),
-          total: new Prisma.Decimal(total),
-          shippingAddress: input.shippingAddress as Prisma.InputJsonValue,
+          subtotal,
+          tax,
+          shippingCost,
+          total,
+          shippingAddress: JSON.stringify(input.shippingAddress),
           items: {
             create: cart.items.map((item) => ({
               productId: item.productId,
               quantity: item.quantity,
-              price: item.product.price,
+              price: Number(item.product.price),
             })),
           },
         },
@@ -101,7 +99,7 @@ export class OrderService {
 
   async findAll(
     userId: string,
-    pagination: PaginationParams,
+    pagination: { page: number; limit: number; sortBy: string; sortOrder: 'asc' | 'desc' },
     isAdmin = false
   ): Promise<unknown> {
     const where = isAdmin ? {} : { userId };
@@ -184,7 +182,7 @@ export class OrderService {
 
     const updated = await prisma.order.update({
       where: { id: orderId },
-      data: { status: status as 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' },
+      data: { status },
       include: {
         items: {
           include: {

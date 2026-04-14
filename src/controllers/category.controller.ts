@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { categoryService } from '../services/category.service.js';
 import { sendSuccess, sendCreated, sendNoContent } from '../types/api.js';
-import { SuccessMessages } from '../config/constants.js';
 
 export class CategoryController {
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -13,7 +12,7 @@ export class CategoryController {
     }
   }
 
-  async findAll(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async findAll(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const categories = await categoryService.findAll();
       sendSuccess(res, categories);
