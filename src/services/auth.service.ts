@@ -9,6 +9,7 @@ import {
   LoginInput,
   JwtPayload,
   AuthenticatedUser,
+  Role,
 } from '../types/auth.js';
 
 export class AuthService {
@@ -38,7 +39,7 @@ export class AuthService {
       user: {
         userId: user.id,
         email: user.email,
-        role: user.role,
+        role: user.role as Role,
       },
       token,
     };
@@ -65,7 +66,7 @@ export class AuthService {
       user: {
         userId: user.id,
         email: user.email,
-        role: user.role,
+        role: user.role as Role,
       },
       token,
     };
@@ -90,7 +91,7 @@ export class AuthService {
     return {
       userId: user.id,
       email: user.email,
-      role: user.role,
+      role: user.role as Role,
     };
   }
 
@@ -106,7 +107,7 @@ export class AuthService {
     return {
       userId: user.id,
       email: user.email,
-      role: user.role,
+      role: user.role as Role,
     };
   }
 
@@ -141,7 +142,7 @@ export class AuthService {
     const payload: JwtPayload = {
       userId: user.id,
       email: user.email,
-      role: user.role as 'USER' | 'ADMIN',
+      role: user.role as Role,
     };
 
     return jwt.sign(payload, config.jwt.secret, {
