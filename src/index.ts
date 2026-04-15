@@ -39,6 +39,86 @@ app.use('/api', routes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
+async function seedIfEmpty() {
+  try {
+    const { default: prisma } = await import('./utils/db.js');
+    const bcrypt = await import('bcryptjs');
+    
+    const userCount = await prisma.user.count();
+    if (userCount === 0) {
+      console.log('🌱 Seeding empty database...');
+      
+      const adminPassword = await bcrypt.hash('Admin123!', 12);
+      const userPassword = await bcrypt.hash('User123!', 12);
+
+      await prisma.user.create({
+        data: {
+          email: 'admin@ecommerce.com',
+          password: adminPassword,
+          firstName: 'Admin',
+          lastName: 'User',
+          role: 'ADMIN',
+        },
+      });
+
+      await prisma.user.create({
+        data: {
+          email: 'user@example.com',
+          password: userPassword,
+          firstName: 'John',
+          lastName: 'Doe',
+          role: 'USER',
+        },
+      });
+
+      const electronics = await prisma.category.create({
+        data: {
+          name: 'Electronics',
+          slug: 'electronics',
+          description: 'Latest gadgets and electronic devices',
+        },
+      });
+
+      const clothing = await prisma.category.create({
+        data: {
+          name: 'Clothing',
+          slug: 'clothing',
+          description: 'Fashion and apparel',
+        },
+      });
+
+      const accessories = await prisma.category.create({
+        data: {
+          name: 'Accessories',
+          slug: 'accessories',
+          description: 'Complementary items and accessories',
+        },
+      });
+
+      const products = [
+        { name: 'Wireless Headphones Pro', description: 'Premium noise-canceling wireless headphones with 30-hour battery life.', price: 299.99, comparePrice: 349.99, sku: 'WHP-001', stock: 50, images: JSON.stringify(['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500']), categoryId: electronics.id, featured: true },
+        { name: 'Smart Watch Series X', description: 'Advanced smartwatch with health monitoring and GPS.', price: 449.99, sku: 'SWX-001', stock: 30, images: JSON.stringify(['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500']), categoryId: electronics.id, featured: true },
+        { name: 'Premium Leather Jacket', description: 'Genuine leather jacket with modern styling.', price: 399.99, comparePrice: 499.99, sku: 'PLJ-001', stock: 25, images: JSON.stringify(['https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500']), categoryId: clothing.id, featured: true },
+        { name: 'Designer Sunglasses', description: 'UV protection with polarized lenses.', price: 149.99, sku: 'DSG-001', stock: 100, images: JSON.stringify(['https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500']), categoryId: accessories.id, featured: false },
+        { name: 'Bluetooth Speaker', description: 'Portable waterproof speaker with 360° sound.', price: 79.99, comparePrice: 99.99, sku: 'BTS-001', stock: 80, images: JSON.stringify(['https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500']), categoryId: electronics.id, featured: false },
+      ];
+
+      for (const p of products) {
+        const slug = p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        await prisma.product.create({
+          data: { ...p, slug: `${slug}-${Date.now().toString(36)}` },
+        });
+      }
+
+      console.log('✅ Database seeded successfully!');
+    }
+  } catch (error) {
+    console.error('❌ Seed error:', error);
+  }
+}
+
+seedIfEmpty();
+
 app.listen(config.port, () => {
   console.log(`
   ╔════════════════════════════════════════════╗
