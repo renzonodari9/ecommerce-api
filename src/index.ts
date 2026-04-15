@@ -76,7 +76,7 @@ async function seedIfEmpty() {
     if (productCount === 0) {
       console.log('🌱 Seeding products...');
       
-      const electronics = await prisma.category.upsert({
+      const electronics = await prisma.category.create({
         data: {
           name: 'Electronics',
           slug: 'electronics',
