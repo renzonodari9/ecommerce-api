@@ -44,6 +44,8 @@ app.use(errorHandler);
 async function seedIfEmpty() {
   try {
     const userCount = await prisma.user.count();
+    const productCount = await prisma.product.count();
+    
     if (userCount === 0) {
       console.log('🌱 Seeding empty database...');
       
@@ -69,8 +71,12 @@ async function seedIfEmpty() {
           role: 'USER',
         },
       });
+    }
 
-      const electronics = await prisma.category.create({
+    if (productCount === 0) {
+      console.log('🌱 Seeding products...');
+      
+      const electronics = await prisma.category.upsert({
         data: {
           name: 'Electronics',
           slug: 'electronics',
