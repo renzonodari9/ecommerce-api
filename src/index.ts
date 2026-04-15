@@ -4,11 +4,13 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
+import bcrypt from 'bcryptjs';
 
 import { config } from './config/index.js';
 import { swaggerSpec } from './config/swagger.js';
 import routes from './routes/index.js';
 import { errorHandler, notFoundHandler } from './middleware/error.js';
+import prisma from './utils/db.js';
 
 const app = express();
 
@@ -41,9 +43,6 @@ app.use(errorHandler);
 
 async function seedIfEmpty() {
   try {
-    const { default: prisma } = await import('./utils/db.js');
-    const bcrypt = await import('bcryptjs');
-    
     const userCount = await prisma.user.count();
     if (userCount === 0) {
       console.log('🌱 Seeding empty database...');
