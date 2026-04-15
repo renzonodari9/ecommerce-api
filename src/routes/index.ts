@@ -28,7 +28,7 @@ router.post('/seed', async (_req, res) => {
     const adminPassword = await bcrypt.hash('Admin123!', 12);
     const userPassword = await bcrypt.hash('User123!', 12);
 
-    const admin = await prisma.user.upsert({
+    await prisma.user.upsert({
       where: { email: 'admin@ecommerce.com' },
       update: {},
       create: {
@@ -40,7 +40,7 @@ router.post('/seed', async (_req, res) => {
       },
     });
 
-    const user = await prisma.user.upsert({
+    await prisma.user.upsert({
       where: { email: 'user@example.com' },
       update: {},
       create: {
