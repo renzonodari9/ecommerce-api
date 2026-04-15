@@ -76,6 +76,9 @@ async function seedIfEmpty() {
     if (productCount === 0) {
       console.log('🌱 Seeding products...');
       
+      await prisma.category.deleteMany({});
+      await prisma.product.deleteMany({});
+      
       const electronics = await prisma.category.create({
         data: {
           name: 'Electronics',
