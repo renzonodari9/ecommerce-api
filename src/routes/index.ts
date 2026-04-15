@@ -23,7 +23,7 @@ router.get('/health', (_req, res) => {
   });
 });
 
-router.post('/seed', async (_req, res) => {
+router.get('/seed', async (_req, res) => {
   try {
     const adminPassword = await bcrypt.hash('Admin123!', 12);
     const userPassword = await bcrypt.hash('User123!', 12);
