@@ -76,13 +76,10 @@ async function seedIfEmpty() {
     if (productCount === 0) {
       console.log('🌱 Seeding products...');
       
-      await prisma.category.deleteMany({});
-      await prisma.product.deleteMany({});
-      
       const electronics = await prisma.category.create({
         data: {
           name: 'Electronics',
-          slug: 'electronics',
+          slug: 'electronics-' + Date.now().toString(36),
           description: 'Latest gadgets and electronic devices',
         },
       });
@@ -90,7 +87,7 @@ async function seedIfEmpty() {
       const clothing = await prisma.category.create({
         data: {
           name: 'Clothing',
-          slug: 'clothing',
+          slug: 'clothing-' + Date.now().toString(36),
           description: 'Fashion and apparel',
         },
       });
@@ -98,7 +95,7 @@ async function seedIfEmpty() {
       const accessories = await prisma.category.create({
         data: {
           name: 'Accessories',
-          slug: 'accessories',
+          slug: 'accessories-' + Date.now().toString(36),
           description: 'Complementary items and accessories',
         },
       });
