@@ -100,12 +100,11 @@ async function seedDatabase() {
       },
     });
 
-    const existingProducts = await prisma.product.findMany({ where: { sku: { in: ['WHP-001', 'SWX-001', 'PLJ-001', 'DSG-001', 'BTS-001'] } } });
+    console.log('🌱 Seeding database...');
     
-    if (existingProducts.length === 0) {
-      console.log('🌱 Seeding products...');
-      
-      const products = [
+    await prisma.product.deleteMany({ where: { sku: { in: ['WHP-001', 'SWX-001', 'PLJ-001', 'DSG-001', 'BTS-001'] } } });
+    
+    const products = [
         { name: 'Wireless Headphones Pro', description: 'Premium noise-canceling wireless headphones with 30-hour battery life.', price: 299.99, comparePrice: 349.99, sku: 'WHP-001', stock: 50, images: JSON.stringify(['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500']), categoryId: electronics.id, featured: true },
         { name: 'Smart Watch Series X', description: 'Advanced smartwatch with health monitoring and GPS.', price: 449.99, sku: 'SWX-001', stock: 30, images: JSON.stringify(['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500']), categoryId: electronics.id, featured: true },
         { name: 'Premium Leather Jacket', description: 'Genuine leather jacket with modern styling.', price: 399.99, comparePrice: 499.99, sku: 'PLJ-001', stock: 25, images: JSON.stringify(['https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500']), categoryId: clothing.id, featured: true },
@@ -121,7 +120,6 @@ async function seedDatabase() {
       }
       
       console.log('✅ Database seeded successfully!');
-    }
   } catch (error) {
     console.error('❌ Seed error:', error);
   }
