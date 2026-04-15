@@ -3,9 +3,13 @@ import { AppError } from '../middleware/error.js';
 import { HttpStatusCode, ErrorMessages } from '../config/constants.js';
 
 export class CartService {
-  async getCart(userId: string): Promise<unknown> {
+  async getCart(cartId?: string): Promise<unknown> {
+    if (!cartId) {
+      return { items: [], subtotal: 0, itemCount: 0 };
+    }
+    
     let cart = await prisma.cart.findUnique({
-      where: { userId },
+      where: { id: cartId },
       include: {
         items: {
           include: {
@@ -25,25 +29,7 @@ export class CartService {
     });
 
     if (!cart) {
-      cart = await prisma.cart.create({
-        data: { userId },
-        include: {
-          items: {
-            include: {
-              product: {
-                select: {
-                  id: true,
-                  name: true,
-                  slug: true,
-                  price: true,
-                  images: true,
-                  stock: true,
-                },
-              },
-            },
-          },
-        },
-      });
+      return { items: [], subtotal: 0, itemCount: 0 };
     }
 
     const subtotal = cart.items.reduce((sum, item) => {
@@ -57,8 +43,15 @@ export class CartService {
     };
   }
 
+  async createCart(): Promise<{ id: string }> {
+    const cart = await prisma.cart.create({
+      data: {},
+    });
+    return { id: cart.id };
+  }
+
   async addItem(
-    userId: string,
+    cartId: string,
     productId: string,
     quantity: number
   ): Promise<unknown> {
@@ -74,20 +67,10 @@ export class CartService {
       throw new AppError(ErrorMessages.INSUFFICIENT_STOCK, HttpStatusCode.BAD_REQUEST);
     }
 
-    let cart = await prisma.cart.findUnique({
-      where: { userId },
-    });
-
-    if (!cart) {
-      cart = await prisma.cart.create({
-        data: { userId },
-      });
-    }
-
     const existingItem = await prisma.cartItem.findUnique({
       where: {
         cartId_productId: {
-          cartId: cart.id,
+          cartId,
           productId,
         },
       },
@@ -107,39 +90,28 @@ export class CartService {
     } else {
       await prisma.cartItem.create({
         data: {
-          cartId: cart.id,
+          cartId,
           productId,
           quantity,
         },
       });
     }
 
-    return this.getCart(userId);
+    return this.getCart(cartId);
   }
 
   async updateItemQuantity(
-    userId: string,
+    cartId: string,
     productId: string,
     quantity: number
   ): Promise<unknown> {
     if (quantity <= 0) {
-      return this.removeItem(userId, productId);
+      return this.removeItem(cartId, productId);
     }
 
-    const cart = await prisma.cart.findUnique({
-      where: { userId },
-      include: {
-        items: {
-          where: { productId },
-        },
-      },
+    const item = await prisma.cartItem.findFirst({
+      where: { cartId, productId },
     });
-
-    if (!cart) {
-      throw new AppError('Cart not found', HttpStatusCode.NOT_FOUND);
-    }
-
-    const item = cart.items[0];
 
     if (!item) {
       throw new AppError('Item not in cart', HttpStatusCode.NOT_FOUND);
@@ -162,39 +134,23 @@ export class CartService {
       data: { quantity },
     });
 
-    return this.getCart(userId);
+    return this.getCart(cartId);
   }
 
-  async removeItem(userId: string, productId: string): Promise<unknown> {
-    const cart = await prisma.cart.findUnique({
-      where: { userId },
-    });
-
-    if (!cart) {
-      throw new AppError('Cart not found', HttpStatusCode.NOT_FOUND);
-    }
-
+  async removeItem(cartId: string, productId: string): Promise<unknown> {
     await prisma.cartItem.deleteMany({
       where: {
-        cartId: cart.id,
+        cartId,
         productId,
       },
     });
 
-    return this.getCart(userId);
+    return this.getCart(cartId);
   }
 
-  async clearCart(userId: string): Promise<void> {
-    const cart = await prisma.cart.findUnique({
-      where: { userId },
-    });
-
-    if (!cart) {
-      throw new AppError('Cart not found', HttpStatusCode.NOT_FOUND);
-    }
-
+  async clearCart(cartId: string): Promise<void> {
     await prisma.cartItem.deleteMany({
-      where: { cartId: cart.id },
+      where: { cartId },
     });
   }
 }
