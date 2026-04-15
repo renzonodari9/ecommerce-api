@@ -2,10 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import { cartService } from '../services/cart.service.js';
 import { sendSuccess, sendNoContent } from '../types/api.js';
 
+const ANONYMOUS_USER_ID = 'anonymous-user';
+
 export class CartController {
   async getCart(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const cart = await cartService.getCart(req.user!.userId);
+      const userId = req.headers['x-user-id'] as string || ANONYMOUS_USER_ID;
+      const cart = await cartService.getCart(userId);
       sendSuccess(res, cart);
     } catch (error) {
       next(error);
@@ -15,7 +18,8 @@ export class CartController {
   async addItem(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { productId, quantity } = req.body;
-      const cart = await cartService.addItem(req.user!.userId, productId, quantity);
+      const userId = req.headers['x-user-id'] as string || ANONYMOUS_USER_ID;
+      const cart = await cartService.addItem(userId, productId, quantity);
       sendSuccess(res, cart, 'Item added to cart');
     } catch (error) {
       next(error);
@@ -25,11 +29,8 @@ export class CartController {
   async updateItemQuantity(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { productId, quantity } = req.body;
-      const cart = await cartService.updateItemQuantity(
-        req.user!.userId,
-        productId,
-        quantity
-      );
+      const userId = req.headers['x-user-id'] as string || ANONYMOUS_USER_ID;
+      const cart = await cartService.updateItemQuantity(userId, productId, quantity);
       sendSuccess(res, cart, 'Cart updated');
     } catch (error) {
       next(error);
@@ -38,7 +39,8 @@ export class CartController {
 
   async removeItem(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const cart = await cartService.removeItem(req.user!.userId, req.params.productId);
+      const userId = req.headers['x-user-id'] as string || ANONYMOUS_USER_ID;
+      const cart = await cartService.removeItem(userId, req.params.productId);
       sendSuccess(res, cart, 'Item removed from cart');
     } catch (error) {
       next(error);
@@ -47,7 +49,8 @@ export class CartController {
 
   async clearCart(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      await cartService.clearCart(req.user!.userId);
+      const userId = req.headers['x-user-id'] as string || ANONYMOUS_USER_ID;
+      await cartService.clearCart(userId);
       sendNoContent(res);
     } catch (error) {
       next(error);
