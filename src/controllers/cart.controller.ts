@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { cartService } from '../services/cart.service.js';
 import { sendSuccess, sendNoContent } from '../types/api.js';
 
-const ANONYMOUS_USER_ID = 'anonymous-user';
+const ANONYMOUS_USER_ID = 'anonymous@anonymous.com';
 
 export class CartController {
   async getCart(req: Request, res: Response, next: NextFunction): Promise<void> {

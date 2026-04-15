@@ -70,6 +70,18 @@ async function seedDatabase() {
       },
     });
 
+    await prisma.user.upsert({
+      where: { email: 'anonymous@anonymous.com' },
+      update: {},
+      create: {
+        email: 'anonymous@anonymous.com',
+        password: await bcrypt.hash('anonymous', 10),
+        firstName: 'Anonymous',
+        lastName: 'User',
+        role: 'USER',
+      },
+    });
+
     const electronics = await prisma.category.upsert({
       where: { slug: 'electronics' },
       update: {},
