@@ -1,10 +1,7 @@
 import { Router } from 'express';
 import { cartController } from '../controllers/cart.controller.js';
-import { authenticate } from '../middleware/auth.js';
 
 const router = Router();
-
-router.use(authenticate);
 
 router.get('/', cartController.getCart.bind(cartController));
 router.post('/items', cartController.addItem.bind(cartController));
