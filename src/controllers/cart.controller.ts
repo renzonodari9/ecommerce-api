@@ -13,7 +13,7 @@ export class CartController {
     }
   }
 
-  async createCart(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async createCart(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const cart = await cartService.createCart();
       sendSuccess(res, cart, 'Cart created');
