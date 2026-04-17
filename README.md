@@ -1,167 +1,84 @@
-# 🛒 E-commerce REST API
+# 🚀 E-commerce API
 
-Professional E-commerce REST API built with Node.js, Express, TypeScript, Prisma, and PostgreSQL.
+REST API completa para e-commerce con autenticación, pagos y documentación Swagger.
 
-## 🚀 Features
+## 📌 Descripción
+Backend robusto para e-commerce que proporciona endpoints RESTful para gestión de productos, categorías, órdenes, usuarios y pagos con Stripe. Incluye documentación Swagger y autenticación JWT.
 
-- **Authentication**: JWT-based with refresh tokens
-- **Products**: CRUD operations with filtering, pagination, and search
-- **Categories**: Hierarchical product categorization
-- **Shopping Cart**: Add, update, remove items
-- **Orders**: Complete order workflow with status tracking
-- **Payments**: Stripe integration ready
-- **Security**: Rate limiting, helmet, CORS, input validation
-- **Documentation**: Swagger/OpenAPI documentation
-- **Testing**: Jest unit tests
+## 🛠️ Tecnologías
+- Node.js
+- Express
+- TypeScript
+- Prisma ORM
+- PostgreSQL
+- JWT (Autenticación)
+- Stripe (Pagos)
+- Swagger (Documentación)
+- Zod (Validación)
+- Helmet & Rate Limiting
 
-## 🛠️ Tech Stack
+## ⚡ Features
+- Autenticación JWT (Register/Login)
+- Gestión de usuarios
+- CRUD productos y categorías
+- Gestión de órdenes
+- Pagos con Stripe
+- Documentación Swagger (/api-docs)
+- Validación de datos con Zod
+- Rate limiting
+- Seguridad con Helmet
+- Tests con Jest
 
-- **Runtime**: Node.js 18+
-- **Framework**: Express.js
-- **Language**: TypeScript
-- **Database**: PostgreSQL with Prisma ORM
-- **Authentication**: JWT + bcrypt
-- **Validation**: Zod
-- **Documentation**: Swagger/OpenAPI
-- **Testing**: Jest
+## 🌐 Endpoints Principales
 
-## 📦 Installation
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | /api/auth/register | Registro de usuario |
+| POST | /api/auth/login | Inicio de sesión |
+| GET | /api/products | Listar productos |
+| POST | /api/products | Crear producto |
+| GET | /api/orders | Listar órdenes |
+| POST | /api/checkout | Procesar pago |
+
+## 📖 Documentación
+Swagger disponible en: `http://localhost:3001/api-docs`
+
+## 📦 Instalación
 
 ```bash
-# Clone the repository
+# Clonar el repo
 git clone https://github.com/renzonodari9/ecommerce-api.git
 cd ecommerce-api
 
-# Install dependencies
+# Instalar dependencias
 npm install
 
-# Copy environment variables
-cp .env.example .env
+# Configurar base de datos PostgreSQL
+# Crear archivo .env con DATABASE_URL
 
-# Edit .env with your database credentials
-```
-
-## 🗄️ Database Setup
-
-```bash
-# Generate Prisma Client
-npm run db:generate
-
-# Push schema to database
+# Generar cliente Prisma y sincronizar BD
 npm run db:push
 
-# Seed database with sample data
+# (Opcional) Poblar con datos de prueba
 npm run db:seed
-```
 
-## 🚀 Running the Application
-
-```bash
-# Development
+# Ejecutar en desarrollo
 npm run dev
-
-# Production
-npm run build
-npm start
 ```
 
-## 📚 API Documentation
+## 🔐 Variables de Entorno (.env)
 
-Once the server is running, visit:
-- Swagger UI: http://localhost:3000/api-docs
-- Health Check: http://localhost:3000/api/health
-
-## 🔐 Default Credentials
-
-After seeding:
-
-**Admin:**
-- Email: admin@ecommerce.com
-- Password: Admin123!
-
-**User:**
-- Email: user@example.com
-- Password: User123!
-
-## 🧪 Testing
-
-```bash
-# Run tests
-npm test
-
-# Watch mode
-npm run test:watch
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/ecommerce
+JWT_SECRET=your-secret-key
+STRIPE_SECRET_KEY=sk_test_...
+PORT=3001
 ```
 
-## 📁 Project Structure
+## 🔐 Credenciales (Desarrollo)
+- **Email**: admin@ecommerce.com
+- **Contraseña**: Admin123!
 
-```
-├── src/
-│   ├── config/         # Configuration files
-│   ├── controllers/    # Request handlers
-│   ├── middleware/     # Express middleware
-│   ├── routes/         # API routes
-│   ├── services/      # Business logic
-│   ├── types/          # TypeScript types
-│   ├── utils/          # Utility functions
-│   └── index.ts        # Application entry point
-├── prisma/
-│   ├── schema.prisma   # Database schema
-│   └── seed.ts         # Database seeder
-└── tests/              # Test files
-```
-
-## 🔌 API Endpoints
-
-### Authentication
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/auth/register | Register new user |
-| POST | /api/auth/login | Login user |
-| GET | /api/auth/profile | Get user profile |
-| PATCH | /api/auth/profile | Update profile |
-| POST | /api/auth/change-password | Change password |
-
-### Products
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/products | List products |
-| GET | /api/products/:slug | Get product by slug |
-| POST | /api/products | Create product (Admin) |
-| PATCH | /api/products/:id | Update product (Admin) |
-| DELETE | /api/products/:id | Delete product (Admin) |
-
-### Categories
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/categories | List categories |
-| GET | /api/categories/:slug | Get category by slug |
-| POST | /api/categories | Create category (Admin) |
-| PATCH | /api/categories/:id | Update category (Admin) |
-| DELETE | /api/categories/:id | Delete category (Admin) |
-
-### Cart
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/cart | Get user's cart |
-| POST | /api/cart/items | Add item to cart |
-| PATCH | /api/cart/items | Update item quantity |
-| DELETE | /api/cart/items/:productId | Remove item |
-| DELETE | /api/cart | Clear cart |
-
-### Orders
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/orders | List user's orders |
-| GET | /api/orders/:orderId | Get order details |
-| POST | /api/orders | Create order |
-| PATCH | /api/orders/:orderId/cancel | Cancel order |
-| PATCH | /api/orders/:orderId/status | Update status (Admin) |
-
-## 🚀 Deploy on Render
-
-See [DEPLOY.md](./DEPLOY.md) for detailed deployment instructions.
-
-## 📝 License
-
-MIT License
+## 👨‍💻 Autor
+**Renzo Nodari** - Desarrollador Full Stack
+- GitHub: @renzonodari9
